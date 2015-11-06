@@ -11,7 +11,7 @@ from flask import Flask
 from pymongo import MongoClient
 app = Flask(__name__)
 
-MONGO_URL='mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb'
+MONGO_URL='mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb?authMechanism=SCRAM-SHA-1'
 
 @app.route('/')
 def hello_world():
@@ -32,10 +32,9 @@ def dumpToMongo(data):
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    client = MongoClient(os.environ.get("MONGOLAB_URI"))
+    client = MongoClient('mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb?authMechanism=SCRAM-SHA-1')
     if client!= None:
-        cnag = client['calnagger']
-        conColl = cnag['consumption']
+        conColl = client['consumption']
         conColl.update_one({'user':'1'},{'$set':info},True)
 
 def dumpToDweet(data):
