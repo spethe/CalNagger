@@ -7,6 +7,7 @@ Created on Sat Oct 31 12:33:46 2015
 import os
 import requests
 import json
+import dweepy
 from flask import Flask
 from pymongo import MongoClient
 from flask.ext.cors import CORS
@@ -18,7 +19,7 @@ MONGO_URL='mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb?aut
 def hello_world():
     return 'Hello World!'
 
-@app.route('/calories', methods=['GET', 'POST'])
+@app.route('/calories', methods=['GET'])
 def getCaloriesForBarcode():
     url='http://world.openfoodfacts.org/api/v0/product/737628064502.json'
     data = requests.get(url)
@@ -40,14 +41,15 @@ def dumpToMongo(data):
         conColl.update_one({'user':'1'},{'$set':info},True)
 
 def dumpToDweet(data):
-    dweetUrl = 'https://dweet.io:443/dweet/for/decisive-train/'
+    #dweetUrl = 'https://dweet.io:443/dweet/for/decisive-train/'
     info ={'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    resp = requests.post(dweetUrl, data=json.dumps(info))
-    print resp
+    dweepy.dweet_for('decisive-train', json.dumps(info));
+    #resp = requests.post(dweetUrl, data=json.dumps(info))
+    #print resp
     return {'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
