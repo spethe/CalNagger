@@ -1,1 +1,1 @@
-web: gunicorn food_rest:app --log-file -
+web: gunicorn flask_rest_service:app
