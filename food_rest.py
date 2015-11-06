@@ -18,9 +18,8 @@ def hello_world():
 
 @app.route('/calories', methods=['GET'])
 def getCaloriesForBarcode():
-    url='http://world.openfoodfacts.org/api/v0/product/737628064502.json'
+    url='http://world.openfoodfacts.org/api/v0/product/7613032921767.json'
     data = requests.get(url)
-    #info = dumpToMongo(data.json())
     info = dumpToDweet(data.json())
     dumpToMongo(data.json())
     return json.dumps(json.dumps(info),indent=4)
@@ -48,7 +47,6 @@ def dumpToMongo(data):
           }
 
 def dumpToDweet(data):
-    #dweetUrl = 'http://dweet.io:80/dweet/for/decisive-train/'
     info ={'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
@@ -56,8 +54,6 @@ def dumpToDweet(data):
           }
    
     dweepy.dweet_for('decisive-train', info)
-    #resp = requests.post(dweetUrl, data=json.dumps(info), headers=headers)
-    #print resp
     return {'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
