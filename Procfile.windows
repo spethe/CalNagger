@@ -1,1 +1,1 @@
-web: gunicorn flask_rest_service:app
+web: python food_rest.py runserver 0.0.0.0:5000 --noreload
