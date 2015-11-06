@@ -45,7 +45,7 @@ def dumpToDweet(data):
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    resp = requests.post(dweetUrl, data=json.dumps(info))
+    resp = requests.post(dweetUrl, data=json.dumps(info), content_type='application/json')
     print resp
     return {'user':'1',
            'genericName': data['product']['generic_name'],
