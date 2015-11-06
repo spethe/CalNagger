@@ -11,7 +11,7 @@ from flask import Flask
 from pymongo import MongoClient
 from urlparse import urlparse
 app = Flask(__name__)
-MONGO_URL = os.environment.get('MONGOLAB_URI')
+MONGO_URL = os.environ.get('MONGOLAB_URI')
 @app.route('/')
 def hello_world():
     return 'Hello World!'
