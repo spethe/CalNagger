@@ -44,7 +44,11 @@ def dumpToDweet(data):
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    resp = requests.post(dweetUrl, data=json.dumps(info))
+    proxyDict = {
+              "http"  : os.environ.get('FIXIE_URL', ''),
+              "https" : os.environ.get('FIXIE_URL', '')
+            }
+    resp = requests.post(dweetUrl, data=json.dumps(info),proxies=proxyDict)
     print resp
     return {'user':'1',
            'genericName': data['product']['generic_name'],
