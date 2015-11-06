@@ -41,15 +41,16 @@ def dumpToMongo(data):
         conColl.update_one({'user':'1'},{'$set':info},True)
 
 def dumpToDweet(data):
-    #dweetUrl = 'https://dweet.io:443/dweet/for/decisive-train/'
+    dweetUrl = 'https://dweet.io:80/dweet/for/decisive-train/'
     info ={'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    dweepy.dweet_for('decisive-train', json.dumps(info));
-    #resp = requests.post(dweetUrl, data=json.dumps(info))
-    #print resp
+          
+    #dweepy.dweet_for('decisive-train', json.dumps(info));
+    resp = requests.post(dweetUrl, data=json.dumps(info))
+    print resp
     return {'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
