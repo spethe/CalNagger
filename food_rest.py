@@ -23,7 +23,7 @@ def hello_world():
 def getCaloriesForBarcode():
     url='http://world.openfoodfacts.org/api/v0/product/737628064502.json'
     data = requests.get(url)
-    print os.environ.get("MONGOLAB_URI")
+    #print os.environ.get("MONGOLAB_URI")
     #dumpToMongo(data.json())
     info = dumpToDweet(data.json())
     return json.dumps(json.dumps(info),indent=4)
@@ -41,16 +41,17 @@ def dumpToMongo(data):
         conColl.update_one({'user':'1'},{'$set':info},True)
 
 def dumpToDweet(data):
-    dweetUrl = 'https://dweet.io:80/dweet/for/decisive-train/'
+    dweetUrl = 'https://dweet.io:443/dweet/for/decisive-train/'
     info ={'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-          
+    print json.dumps(info)    
     #dweepy.dweet_for('decisive-train', json.dumps(info));
     resp = requests.post(dweetUrl, data=json.dumps(info))
-    print resp
+    
+    print json.dumps(resp)
     return {'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
