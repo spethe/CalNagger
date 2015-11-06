@@ -38,17 +38,13 @@ def dumpToMongo(data):
         conColl.update_one({'user':'1'},{'$set':info},True)
 
 def dumpToDweet(data):
-    dweetUrl = 'http://dweet.io:80/dweet/for/decisive-train/'
+    dweetUrl = 'https://dweet.io:80/dweet/for/decisive-train/'
     info ={'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    proxyDict = {
-              "http"  : os.environ.get('FIXIE_URL', ''),
-              "https" : os.environ.get('FIXIE_URL', '')
-            }
-    resp = requests.post(dweetUrl, data=json.dumps(info),proxies=proxyDict)
+    resp = requests.post(dweetUrl, data=json.dumps(info))
     print resp
     return {'user':'1',
            'genericName': data['product']['generic_name'],
