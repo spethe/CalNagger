@@ -9,8 +9,9 @@ import requests
 import json
 from flask import Flask
 from pymongo import MongoClient
+from flask.ext.cors import CORS
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app)
 MONGO_URL='mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb?authMechanism=SCRAM-SHA-1'
 
 @app.route('/')
