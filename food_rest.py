@@ -10,7 +10,7 @@ import json
 from flask import Flask
 from pymongo import MongoClient
 app = Flask(__name__)
-
+CORS(app)
 MONGO_URL='mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb?authMechanism=SCRAM-SHA-1'
 
 @app.route('/')
@@ -45,7 +45,7 @@ def dumpToDweet(data):
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    resp = requests.post(dweetUrl, data=json.dumps(info), content_type='application/json')
+    resp = requests.post(dweetUrl, data=json.dumps(info))
     print resp
     return {'user':'1',
            'genericName': data['product']['generic_name'],
