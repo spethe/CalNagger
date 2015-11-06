@@ -17,7 +17,7 @@ MONGO_URL='mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb?aut
 def hello_world():
     return 'Hello World!'
 
-@app.route('/calories', methods=['GET'])
+@app.route('/calories', methods=['GET','POST'])
 def getCaloriesForBarcode():
     url='http://world.openfoodfacts.org/api/v0/product/737628064502.json'
     data = requests.get(url)
