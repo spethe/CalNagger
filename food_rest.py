@@ -8,6 +8,7 @@ import dweepy
 import requests
 import json
 from flask import Flask
+from flask import request
 from pymongo import MongoClient
 from urlparse import urlparse
 app = Flask(__name__)
@@ -16,9 +17,12 @@ MONGO_URL = os.environ.get('MONGOLAB_URI')
 def hello_world():
     return 'Hello World!'
 
+
+
 @app.route('/calories', methods=['GET'])
 def getCaloriesForBarcode():
-    url='http://world.openfoodfacts.org/api/v0/product/7613032921767.json'
+    barcode = request.args.get('barcode')
+    url='http://world.openfoodfacts.org/api/v0/product/' + barcode + '.json'
     data = requests.get(url)
     info = dumpToDweet(data.json())
     dumpToMongo(data.json())
