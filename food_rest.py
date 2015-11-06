@@ -22,7 +22,7 @@ def getCaloriesForBarcode():
     url='http://world.openfoodfacts.org/api/v0/product/737628064502.json'
     data = requests.get(url)
     print os.environ.get("MONGOLAB_URI")
-    dumpToMongo(data.json())
+    #dumpToMongo(data.json())
     info = dumpToDweet(data.json())
     return json.dumps(json.dumps(info),indent=4)
     
