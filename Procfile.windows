@@ -1,1 +1,1 @@
-web: gunicorn food_rest:application
+web: python food_rest.py
