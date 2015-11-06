@@ -3,6 +3,7 @@
 Created on Sat Oct 31 12:33:46 2015
 @author: swanand
 """
+import os
 import dweepy
 import requests
 import json
@@ -57,4 +58,5 @@ def dumpToDweet(data):
           }   
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
