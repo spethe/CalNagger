@@ -17,7 +17,7 @@ MONGO_URL='mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb?aut
 def hello_world():
     return 'Hello World!'
 
-@app.route('/calories', methods=['GET','POST'])
+@app.route('/calories', methods=['GET', 'POST'])
 def getCaloriesForBarcode():
     url='http://world.openfoodfacts.org/api/v0/product/737628064502.json'
     data = requests.get(url)
@@ -25,7 +25,8 @@ def getCaloriesForBarcode():
     #dumpToMongo(data.json())
     info = dumpToDweet(data.json())
     return json.dumps(json.dumps(info),indent=4)
-    
+
+
 def dumpToMongo(data):
     info ={'user':'1',
            'genericName': data['product']['generic_name'],
@@ -38,7 +39,7 @@ def dumpToMongo(data):
         conColl.update_one({'user':'1'},{'$set':info},True)
 
 def dumpToDweet(data):
-    dweetUrl = 'https://dweet.io:80/dweet/for/decisive-train/'
+    dweetUrl = 'https://dweet.io:443/dweet/for/decisive-train/'
     info ={'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
