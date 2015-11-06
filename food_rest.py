@@ -22,8 +22,8 @@ def getCaloriesForBarcode():
     url='http://world.openfoodfacts.org/api/v0/product/737628064502.json'
     data = requests.get(url)
 
-    info = dumpToMongo(data.json())
-    dumpToDweet(data.json())
+ #   info = dumpToMongo(data.json())
+    info = dumpToDweet(data.json())
     return json.dumps(json.dumps(info),indent=4)
     
 def dumpToMongo(data):
@@ -51,6 +51,11 @@ def dumpToDweet(data):
           }
     resp = requests.post(dweetUrl, data=json.dumps(info))
     print resp
+    return {'user':'1',
+           'genericName': data['product']['generic_name'],
+           'code': data['code'],
+           'calories':data['product']['nutriments']['energy']
+          }
     
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
