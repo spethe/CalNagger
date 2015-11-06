@@ -1,1 +1,1 @@
-web: python food_rest.py:app
+web: gunicorn food_rest:app --log-file -
