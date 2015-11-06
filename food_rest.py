@@ -9,8 +9,9 @@ import requests
 import json
 from flask import Flask
 from pymongo import MongoClient
+from urlparse import urlparse
 app = Flask(__name__)
-
+MONGO_URL = os.environment.get('MONGOLAB_URI')
 @app.route('/')
 def hello_world():
     return 'Hello World!'
@@ -19,9 +20,9 @@ def hello_world():
 def getCaloriesForBarcode():
     url='http://world.openfoodfacts.org/api/v0/product/737628064502.json'
     data = requests.get(url)
-
     #info = dumpToMongo(data.json())
     info = dumpToDweet(data.json())
+    dumpToMongo(data.json())
     return json.dumps(json.dumps(info),indent=4)
     
 def dumpToMongo(data):
@@ -30,10 +31,16 @@ def dumpToMongo(data):
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    client = MongoClient()
-    cnag = client['calnagger']
-    conColl = cnag['consumption']
-    conColl.find_one_and_update({'user':'1'},{'$set':info},True)
+          
+    if MONGO_URL:
+        client = MongoClient(MONGO_URL)
+        db = client[urlparse(MONGO_URL).path[1:]]
+    else:
+        client = MongoClient()
+        db = client['calnagger']
+        
+    conColl = db['consumption']
+    conColl.update({'user':'1'},{'$set':info},True)
     return {'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
