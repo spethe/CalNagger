@@ -10,6 +10,8 @@ from flask import Flask
 from pymongo import MongoClient
 app = Flask(__name__)
 
+MONGO_URL='mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb'
+
 @app.route('/')
 def hello_world():
     return 'Hello World!'
@@ -29,7 +31,7 @@ def dumpToMongo(data):
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    client = MongoClient()
+    client = MongoClient(MONGO_URL)
     cnag = client['calnagger']
     conColl = cnag['consumption']
     conColl.update_one({'user':'1'},{'$set':info},True)
@@ -51,4 +53,5 @@ def dumpToDweet(data):
          
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
