@@ -32,7 +32,7 @@ def dumpToMongo(data):
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    client = MongoClient(MONGO_URL)
+    client = MongoClient('mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb')
     cnag = client['calnagger']
     conColl = cnag['consumption']
     conColl.update_one({'user':'1'},{'$set':info},True)
