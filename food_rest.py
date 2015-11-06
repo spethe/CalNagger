@@ -22,7 +22,7 @@ def getCaloriesForBarcode():
     url='http://world.openfoodfacts.org/api/v0/product/737628064502.json'
     data = requests.get(url)
 
- #   info = dumpToMongo(data.json())
+    dumpToMongo(data.json())
     info = dumpToDweet(data.json())
     return json.dumps(json.dumps(info),indent=4)
     
@@ -32,15 +32,10 @@ def dumpToMongo(data):
            'code': data['code'],
            'calories':data['product']['nutriments']['energy']
           }
-    client = MongoClient('mongodb://admin:admin@ds049864.mongolab.com:49864/heroku_2xf72wpb')
+    client = MongoClient(os.environ.get("MONGOLAB_URI"))
     cnag = client['calnagger']
     conColl = cnag['consumption']
     conColl.update_one({'user':'1'},{'$set':info},True)
-    return {'user':'1',
-           'genericName': data['product']['generic_name'],
-           'code': data['code'],
-           'calories':data['product']['nutriments']['energy']
-          }
 
 def dumpToDweet(data):
     dweetUrl = 'http://dweet.io:80/dweet/for/decisive-train/'
