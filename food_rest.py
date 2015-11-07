@@ -33,11 +33,18 @@ def getCaloriesForBarcode():
     return json.dumps(json.dumps(info),indent=4)
     
 def dumpToMongo(data):
-    info ={'user':'1',
-           'genericName': data['product']['generic_name'],
-           'code': data['code'],
-           'calories':data['product']['nutriments']['energy']
-          }
+    try:
+        info ={'user':'1',
+               'genericName': data['product']['generic_name'],
+               'code': data['code'],
+               'calories':data['product']['nutriments']['energy']
+              }
+    except:
+        info ={'user':'1',
+               'genericName': 'a',
+               'code': '000',
+               'calories':'111'
+              }
           
     if MONGO_URL:
         client = MongoClient(MONGO_URL)
@@ -55,11 +62,18 @@ def dumpToMongo(data):
           }
 
 def dumpToDweet(data):
-    info ={'user':'1',
-           'genericName': data['product']['generic_name'],
-           'code': data['code'],
-           'calories':data['product']['nutriments']['energy']
-          }
+    try:
+        info ={'user':'1',
+               'genericName': data['product']['generic_name'],
+               'code': data['code'],
+               'calories':data['product']['nutriments']['energy']
+              }
+    except:
+        info ={'user':'1',
+               'genericName': 'a',
+               'code': '000',
+               'calories':'111'
+              }
    
     dweepy.dweet_for('decisive-train', info)
     return {'user':'1',
