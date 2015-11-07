@@ -22,6 +22,7 @@ def hello_world():
 @app.route('/calories', methods=['GET'])
 def getCaloriesForBarcode():
     barcode = request.args.get('barcode')
+    print 'Should print++++++' + barcode
     url='http://world.openfoodfacts.org/api/v0/product/' + barcode + '.json'
     data = requests.get(url)
     info = dumpToDweet(data.json())
