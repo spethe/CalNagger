@@ -41,7 +41,7 @@ def dumpToMongo(data):
         info ={'user':'1',
                'genericName': data['product']['generic_name'],
                'code': data['code'],
-               'calories':data['product']['nutriments']['energy']
+               'calories':int(data['product']['nutriments']['energy'])
               }
     except:
         info ={'user':'1',
@@ -59,8 +59,9 @@ def dumpToMongo(data):
         
     conColl = db['consumption']
     conColl.insert(info)
-    docs = [getDocsForToday(conColl)]
-    print 'Todays Doc Count ----' + docs.count
+    docs = getDocsForToday(conColl)
+    '''for document in docs:
+        print(document) '''
     return {'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
@@ -90,13 +91,25 @@ def dumpToDweet(data):
 
 def getDocsForToday(conColl):
     today = datetime.datetime.today()
-    return conColl.find({
-    '_id': {
-        '$gte': ObjectId.from_datetime(datetime.datetime(today.year,today.month,today.day)),
-        '$lt': ObjectId.from_datetime(datetime.datetime.now())
-    }
-    #Add User
-});
+    print datetime.datetime.now()
+    aggr = conColl.aggregate(
+        [
+        {'$match':{'_id': {'$gte': ObjectId.from_datetime(datetime.datetime(today.year,today.month,today.day))}}},
+        {'$group':{ '_id' : None, 'caloriesForDay': { '$sum': '$calories' }}}
+        ]
+        )
+    
+    results = conColl.find({
+                                    '_id': {
+                                    '$gte': ObjectId.from_datetime(datetime.datetime(today.year,today.month,today.day))                          
+    }})
+    todaysDocs =  list(results)
+    aggrDocs = list(aggr)
+    print 'LENGTH==== '+ str(len(todaysDocs))
+    for doc in aggrDocs:
+        print doc
+    #Add Users
+    return todaysDocs
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
