@@ -28,11 +28,12 @@ def getCaloriesForBarcode():
     url='http://world.openfoodfacts.org/api/v0/product/' + barcode + '.json'
     print 'URL is ----' + url
     data = requests.get(url)
-    info = dumpToDweet(data.json())
     dumpToMongo(data.json())
+    info = dumpToDweet(data.json())
     return json.dumps(json.dumps(info),indent=4)
     
 def dumpToMongo(data):
+   
     try:
         info ={'user':'1',
                'genericName': data['product']['generic_name'],
@@ -54,7 +55,7 @@ def dumpToMongo(data):
         db = client['calnagger']
         
     conColl = db['consumption']
-    conColl.update({'user':'1'},{'$set':info},True)
+    conColl.insert(info);
     return {'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
@@ -62,18 +63,18 @@ def dumpToMongo(data):
           }
 
 def dumpToDweet(data):
-    try:
-        info ={'user':'1',
-               'genericName': data['product']['generic_name'],
-               'code': data['code'],
-               'calories':data['product']['nutriments']['energy']
-              }
-    except:
-        info ={'user':'1',
-               'genericName': 'a',
-               'code': '000',
-               'calories':'111'
-              }
+    info={}
+    info.setdefault('user','1')
+    info.setdefault('product',{})
+    info['product'].setdefault('generic_name','default-name')
+    info['product'].setdefault('nutriments', {})
+    info['product']['nutriments'].setdefault('energy',0)
+    info.setdefault('code','000000')
+    info ={ 'user':'1',
+            'genericName': data['product']['generic_name'],
+            'code': data['code'],
+            'calories':data['product']['nutriments']['energy']
+          }
    
     dweepy.dweet_for('decisive-train', info)
     return {'user':'1',
