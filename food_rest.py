@@ -11,6 +11,8 @@ from flask import Flask
 from flask import request
 from pymongo import MongoClient
 from urlparse import urlparse
+import datetime
+
 app = Flask(__name__)
 MONGO_URL = os.environ.get('MONGOLAB_URI')
 @app.route('/')
@@ -55,7 +57,9 @@ def dumpToMongo(data):
         db = client['calnagger']
         
     conColl = db['consumption']
-    conColl.insert(info);
+    conColl.insert(info)
+    docs = [getDocsForToday(conColl)]
+    print 'Todays Doc Count ----' + docs.count
     return {'user':'1',
            'genericName': data['product']['generic_name'],
            'code': data['code'],
@@ -83,6 +87,14 @@ def dumpToDweet(data):
            'calories':data['product']['nutriments']['energy']
           }   
 
+def getDocsForToday(conColl):
+    today = datetime.datetime.today()
+    return conColl.find({
+    '_id': {
+        '$gte':datetime.datetime(today.year,today.month,today.day),
+        '$lt': datetime.datetime.now()
+    }
+});
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
