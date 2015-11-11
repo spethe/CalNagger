@@ -1,2 +1,0 @@
-# CalNagger
-Ubiquitous computing project
