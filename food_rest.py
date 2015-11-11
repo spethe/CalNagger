@@ -12,6 +12,7 @@ from flask import request
 from pymongo import MongoClient
 from urlparse import urlparse
 import datetime
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 MONGO_URL = os.environ.get('MONGOLAB_URI')
@@ -91,9 +92,10 @@ def getDocsForToday(conColl):
     today = datetime.datetime.today()
     return conColl.find({
     '_id': {
-        '$gte':datetime.datetime(today.year,today.month,today.day),
-        '$lt': datetime.datetime.now()
+        '$gte': ObjectId.from_datetime(datetime.datetime(today.year,today.month,today.day)),
+        '$lt': ObjectId.from_datetime(datetime.datetime.now())
     }
+    #Add User
 });
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
