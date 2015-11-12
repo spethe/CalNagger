@@ -14,6 +14,7 @@ from urlparse import urlparse
 import datetime
 from bson.objectid import ObjectId
 
+OUNCE_TO_G = 28.3495
 app = Flask(__name__)
 MONGO_URL = os.environ.get('MONGOLAB_URI')
 @app.route('/')
@@ -26,14 +27,17 @@ def hello_world():
 def getCaloriesForBarcode():
     
     barcode = request.args.get('barcode', '7613032921767') 
+    weight = request.args.get('weight','10')
+    wt_in_g = float(weight) * OUNCE_TO_G
+    no_of_100g= wt_in_g/100
     url='http://world.openfoodfacts.org/api/v0/product/' + barcode + '.json'
     print 'URL is ----' + url
     data = requests.get(url)
-    aggrData = dumpToMongo(data.json())
+    aggrData = dumpToMongo(data.json(),no_of_100g)
     info = dumpToDweet(data.json(), aggrData)
     return json.dumps(json.dumps(info),indent=4)
     
-def dumpToMongo(data):
+def dumpToMongo(data, no_of_100g):
     
     info={}
     info.setdefault('user','1')
@@ -51,9 +55,9 @@ def dumpToMongo(data):
             'genericName': data['product']['generic_name'],
             'code': data['code'],
             'calories':int(data['product']['nutriments']['energy']),
-            'fat': float(data['product']['nutriments']['fat_100g']),
-            'carbohydrates': float(data['product']['nutriments']['carbohydrates_100g']),
-            'proteins': float(data['product']['nutriments']['proteins_100g'])
+            'fat': float(data['product']['nutriments']['fat_100g'])*no_of_100g,
+            'carbohydrates': float(data['product']['nutriments']['carbohydrates_100g'])*no_of_100g,
+            'proteins': float(data['product']['nutriments']['proteins_100g']) * no_of_100g
           }
           
     if MONGO_URL:
