@@ -26,12 +26,13 @@ def hello_world():
 @app.route('/calories', methods=['GET'])
 def getCaloriesForBarcode():
     
-    barcode = request.args.get('barcode', '7613032921767') 
-    weight = request.args.get('weight','10')
+    barcode = request.args.get('barcode', '00214036') 
+    weight = request.args.get('weight','16')
     wt_in_g = float(weight) * OUNCE_TO_G
     no_of_100g= wt_in_g/100
     url='http://world.openfoodfacts.org/api/v0/product/' + barcode + '.json'
     print 'URL is ----' + url
+    print 'NO-100' + str(no_of_100g)
     data = requests.get(url)
     aggrData = dumpToMongo(data.json(),no_of_100g)
     info = dumpToDweet(data.json(), aggrData)
@@ -52,7 +53,7 @@ def dumpToMongo(data, no_of_100g):
 
     info ={
             'user':'1',
-            'genericName': data['product']['generic_name'],
+            'genericName': data['product']['product_name'],
             'code': data['code'],
             'calories':int(data['product']['nutriments']['energy']),
             'fat': float(data['product']['nutriments']['fat_100g'])*no_of_100g,
@@ -77,7 +78,7 @@ def dumpToMongo(data, no_of_100g):
     doc.setdefault('proteinsForDay', 0.0)
     
     return {'user':'1',
-           'genericName': data['product']['generic_name'],
+           'genericName': data['product']['product_name'],
            'code': data['code'],
            'calories':data['product']['nutriments']['energy'],
            'caloriesForToday':str(doc['caloriesForDay']),
@@ -100,13 +101,14 @@ def dumpToDweet(data, aggrData):
     aggrData.setdefault('proteinsForToday', '0')
 
     info ={ 'user':'1',
-            'genericName': data['product']['generic_name'],
+            'genericName': data['product']['product_name'],
             'code': data['code'],
             'calories':data['product']['nutriments']['energy'],
             'caloriesForToday':aggrData['caloriesForToday'],
             'carbsForToday':aggrData['carbsForToday'],
             'fatForToday':aggrData['fatForToday'],
-            'proteinsForToday':aggrData['proteinsForToday']
+            'proteinsForToday':aggrData['proteinsForToday'],
+            'weekly_calories':'10,2,3,5,6,7,8'
           }
    
     dweepy.dweet_for('decisive-train', info)
