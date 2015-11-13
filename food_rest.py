@@ -34,7 +34,7 @@ def getCaloriesForBarcode():
     
     barcode = request.args.get('barcode', '00214036') 
     weight = request.args.get('weight','16')
-    user = request.args.get('user','1')
+    user = request.args.get('user','2')
     wt_in_g = float(weight) * OUNCE_TO_G
     no_of_100g= wt_in_g/100
     url='http://world.openfoodfacts.org/api/v0/product/' + barcode + '.json'
@@ -43,15 +43,15 @@ def getCaloriesForBarcode():
     print 'NO-100   --- ' + str(no_of_100g)
     data = requests.get(url)
     
-    aggrData = dumpToMongo(data.json(),no_of_100g)
+    aggrData = dumpToMongo(data.json(),no_of_100g, user)
     info = dumpToDweet(data.json(), aggrData, user)
     return json.dumps(json.dumps(info),indent=4)
     
-def dumpToMongo(data, no_of_100g):
-    info = getDefaultInfo();
+def dumpToMongo(data, no_of_100g, user):
+    info = getDefaultInfo(user);
 
     info ={
-            'user':'1',
+            'user': user,
             'genericName': data['product']['product_name'],
             'code': data['code'],
             'calories':int(data['product']['nutriments']['energy']),
@@ -73,7 +73,7 @@ def dumpToMongo(data, no_of_100g):
     doc = next(iter(aggrDocs), None)
     doc = getDefaultAggrDoc(doc)
     
-    return {'user':'1',
+    return {'user':user,
            'genericName': data['product']['product_name'],
            'code': data['code'],
            'calories':data['product']['nutriments']['energy'],
@@ -91,9 +91,9 @@ def getDefaultAggrDoc(doc):
     doc.setdefault('proteinsForDay', 0.0)
     return doc;
     
-def getDefaultInfo():
+def getDefaultInfo(user):
     info={}
-    info.setdefault('user','1')
+    info.setdefault('user', user)
     info.setdefault('product',{})
     info['product'].setdefault('generic_name','default-name')
     info['product'].setdefault('nutriments', {})
@@ -107,10 +107,10 @@ def getDefaultInfo():
 def dumpToDweet(data, aggrData, user):
 
     alert = isProhibited(data,user)
-    info = getDefaultInfo()
+    info = getDefaultInfo(user)
     aggrData = getDefaultAggrDoc(aggrData)
     
-    info ={ 'user':'1',
+    info ={ 'user': user,
             'genericName': data['product']['product_name'],
             'code': data['code'],
             'calories':data['product']['nutriments']['energy'],
