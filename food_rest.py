@@ -14,8 +14,8 @@ from urlparse import urlparse
 from datetime import datetime
 from bson.objectid import ObjectId
 
-OUNCE_TO_G = 28.3495
 app = Flask(__name__)
+OUNCE_TO_G = 28.3495
 MONGO_URL = os.environ.get('MONGOLAB_URI')
 
 userinfo = {
@@ -46,7 +46,20 @@ def getCaloriesForBarcode():
     aggrData = dumpToMongo(data.json(),no_of_100g, user)
     info = dumpToDweet(data.json(), aggrData, user)
     return json.dumps(json.dumps(info),indent=4)
+  
+@app.route('/reset', methods=['GET'])
+def resetCollections():
     
+    if MONGO_URL:
+      client = MongoClient(MONGO_URL)
+      db = client[urlparse(MONGO_URL).path[1:]]
+    else:
+      client = MongoClient()
+      db = client['calnagger']
+    conColl = db['consumption']
+    conColl.drop()
+    return 'Done'
+  
 def dumpToMongo(data, no_of_100g, user):
     info = getDefaultInfo(user);
 
@@ -68,6 +81,7 @@ def dumpToMongo(data, no_of_100g, user):
         db = client['calnagger']
         
     conColl = db['consumption']
+    
     conColl.insert(info)
     aggrDocs = getDocsForToday(conColl)
     doc = next(iter(aggrDocs), None)
